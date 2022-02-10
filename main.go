@@ -14,8 +14,8 @@ func main() {
 	router := mux.NewRouter()
 	req := handlers.ReqController{}
 
-	router.HandleFunc("/", req.GetLongRetShort).Methods("GET")
-	router.HandleFunc("/", req.GetShortRetLong).Methods("POST")
+	router.HandleFunc("/", req.GetLongRetShort).Methods("POST")
+	router.HandleFunc("/", req.GetShortRetLong).Methods("GET")
 
 	conf := storage.DBconfig{
 		User:   "go_user",
