@@ -66,7 +66,6 @@ func NewConnection(dbconfig DBconfig) (Service, error) {
 		fmt.Fprintf(os.Stderr, "Error connecting database: %v\n", err)
 		os.Exit(1)
 	}
-	//defer connection.Close(context.Background())
 
 	_, err = connection.Exec(context.Background(), createQuery)
 	if err != nil {

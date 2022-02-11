@@ -1,7 +1,7 @@
 
 get		:
 		curl -L -X GET 'localhost:8080/' -H 'Content-Type: application/json' \
- 		--data-raw '{"url_short": "1a3_09Ezhi"}'
+ 		--data-raw '{"url_short": "dummy"}'
 
 post	:
 		curl -L -X POST 'localhost:8080/' -H 'Content-Type: application/json' \
