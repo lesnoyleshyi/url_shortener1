@@ -22,7 +22,7 @@ func (p *postgres) Save(shortUrl, longUrl string) (string, error) {
 	if err != nil || ret.RowsAffected() == 0 {
 		return "", err
 	}
-	return ret.String(), nil
+	return shortUrl, nil
 }
 
 func (p *postgres) Retrieve(shortUrl string) (string, error) {

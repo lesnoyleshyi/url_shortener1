@@ -92,7 +92,6 @@ func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, er
 		return nil, http.StatusInternalServerError, fmt.Errorf("error unmarshalling recieved url: %s", err)
 	}
 	UrlFromReq.Encode()
-	fmt.Printf("After method: %s\n", UrlFromReq.UrlShort)
 	ret, err := h.storage.Save(UrlFromReq.UrlShort, UrlFromReq.UrlLong)
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to save url in storage: %s", err)
