@@ -31,13 +31,13 @@ func (p *postgres) Save(longUrl string) (string, error) {
 }
 
 func (p *postgres) Retrieve(shortUrl string) (string, error) {
-	queryStr := "SELECT * FROM urls WHERE short_url = $1;"
-
-	ret, err := p.conn.Exec(context.Background(), queryStr, shortUrl)
-	if err != nil || ret.RowsAffected() == 0 {
+	queryStr := "SELECT long_url FROM urls WHERE short_url = $1;"
+	var longUrl string
+	err := p.conn.QueryRow(context.Background(), queryStr, shortUrl).Scan(&longUrl)
+	if err != nil {
 		return "", err
 	}
-	return ret.String(), nil
+	return longUrl, nil
 }
 
 func (p *postgres) Close() error {

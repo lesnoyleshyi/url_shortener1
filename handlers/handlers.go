@@ -71,7 +71,7 @@ func (h handler) ProcessShort(w io.Writer, r *http.Request) (interface{}, int, e
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to retrieve url from storage: %s", err)
 	}
-	return h.endpoint + ret, http.StatusCreated, nil
+	return ret, http.StatusCreated, nil
 }
 
 func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, error) {
