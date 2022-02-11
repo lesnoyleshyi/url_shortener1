@@ -7,9 +7,41 @@ import (
 	"os"
 )
 
+type Service interface {
+	Save(string) (string, error)
+	Retrieve(string) (string, error)
+	Close() error
+}
+
 type Url struct {
 	LongUrl  string `json:"long_url"`
 	ShortUrl string `json:"short_url"`
+}
+
+type postgres struct{ conn *pgx.Conn }
+
+func (p *postgres) Save(longUrl string) (string, error) {
+	queryStr := "INSERT INTO urls (short_url, long_url) VALUES ($1, $2);"
+
+	ret, err := p.conn.Exec(context.Background(), queryStr, "dummy", longUrl)
+	if err != nil || ret.RowsAffected() == 0 {
+		return "", err
+	}
+	return ret.String(), nil
+}
+
+func (p *postgres) Retrieve(shortUrl string) (string, error) {
+	queryStr := "SELECT * FROM urls WHERE short_url = $1;"
+
+	ret, err := p.conn.Exec(context.Background(), queryStr, shortUrl)
+	if err != nil || ret.RowsAffected() == 0 {
+		return "", err
+	}
+	return ret.String(), nil
+}
+
+func (p *postgres) Close() error {
+	return p.conn.Close(context.Background())
 }
 
 type DBconfig struct {
@@ -20,7 +52,7 @@ type DBconfig struct {
 	DbName string
 }
 
-func NewConnection(dbconfig DBconfig) (*pgx.Conn, error) {
+func NewConnection(dbconfig DBconfig) (Service, error) {
 	connstr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbconfig.User, dbconfig.Passwd,
 		dbconfig.Host, dbconfig.Port, dbconfig.DbName)
@@ -29,17 +61,17 @@ func NewConnection(dbconfig DBconfig) (*pgx.Conn, error) {
 		"long_url	varchar(2048)	NOT NULL UNIQUE" +
 		");"
 
-	conn, err := pgx.Connect(context.Background(), connstr)
+	connection, err := pgx.Connect(context.Background(), connstr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error connecting database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer connection.Close(context.Background())
 
-	_, err = conn.Exec(context.Background(), createQuery)
+	_, err = connection.Exec(context.Background(), createQuery)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating table for url storage: %v\n", err)
 		os.Exit(1)
 	}
-	return conn, nil
+	return &postgres{conn: connection}, nil
 }

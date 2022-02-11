@@ -3,9 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"url_shortener1/storage"
 )
 
 type ReqController struct{}
@@ -13,6 +15,32 @@ type ReqController struct{}
 type Url struct {
 	UrlShort string `json:"url_short"`
 	UrlLong  string `json:"url_long"`
+}
+type handler struct {
+	endpoint string
+	storage  storage.Service
+}
+
+func NewRouter(endpoint string, storage storage.Service) *mux.Router {
+	router := mux.NewRouter()
+	handler := handler{endpoint: endpoint, storage: storage}
+	router.HandleFunc(endpoint, respHandler(handler.ProcessShort)).Methods("GET")
+	router.HandleFunc(endpoint, respHandler(handler.ProcessLong)).Methods("POST")
+	return router
+}
+
+func respHandler(h func() ) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request)
+
+}
+
+func (h handler) ProcessShort() {
+	//h.storage.Save()
+	return
+}
+
+func (h handler) ProcessLong() {
+
 }
 
 func (req ReqController) GetLongRetShort(w http.ResponseWriter, r *http.Request) {
