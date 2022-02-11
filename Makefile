@@ -5,4 +5,4 @@ get		:
 
 post	:
 		curl -L -X POST 'localhost:8080/' -H 'Content-Type: application/json' \
- 		--data-raw '{"url_long": "https://www.alexedwa.wefwe/wefwe/we"}'
+ 		--data-raw '{"url_long": "https://www.alexewearethe.loh/gg"}'

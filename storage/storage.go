@@ -9,7 +9,7 @@ import (
 
 type Service interface {
 	Save(string, string) (string, error)
-	Retrieve(string) (string, error)
+	Retrieve(string, string) (string, error)
 	Close() error
 }
 
@@ -25,14 +25,22 @@ func (p *postgres) Save(shortUrl, longUrl string) (string, error) {
 	return shortUrl, nil
 }
 
-func (p *postgres) Retrieve(shortUrl string) (string, error) {
-	queryStr := "SELECT long_url FROM urls WHERE short_url = $1;"
-	var longUrl string
-	err := p.conn.QueryRow(context.Background(), queryStr, shortUrl).Scan(&longUrl)
+func (p *postgres) Retrieve(Url, ShortOrLong string) (string, error) {
+	var queryStr string
+
+	if ShortOrLong == "short" {
+		queryStr = "SELECT short_url FROM urls WHERE long_url = $1;"
+	} else if ShortOrLong == "long" {
+		queryStr = "SELECT long_url FROM urls WHERE short_url = $1;"
+	} else {
+		return "", fmt.Errorf("invalid second argument for Retrieve() method")
+	}
+	var retUrl string
+	err := p.conn.QueryRow(context.Background(), queryStr, Url).Scan(&retUrl)
 	if err != nil {
 		return "", err
 	}
-	return longUrl, nil
+	return retUrl, nil
 }
 
 func (p *postgres) Close() error {

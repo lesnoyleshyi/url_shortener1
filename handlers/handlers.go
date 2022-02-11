@@ -63,14 +63,14 @@ func (h handler) ProcessShort(w io.Writer, r *http.Request) (interface{}, int, e
 	if err := json.Unmarshal(body, &UrlFromReq); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error unmarshalling recieved url: %s", err)
 	}
-	ret, err := h.storage.Retrieve(UrlFromReq.UrlShort)
+	longUrl, err := h.storage.Retrieve(UrlFromReq.UrlShort, "long")
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, http.StatusBadRequest, fmt.Errorf("no such short url within storage")
 		}
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to retrieve url from storage: %s", err)
 	}
-	return ret, http.StatusCreated, nil
+	return longUrl, http.StatusCreated, nil
 }
 
 func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, error) {
@@ -91,10 +91,17 @@ func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, er
 	if err := json.Unmarshal(body, &UrlFromReq); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error unmarshalling recieved url: %s", err)
 	}
+	UrlFromReq.UrlShort, err = h.storage.Retrieve(UrlFromReq.UrlLong, "short")
+	if err != nil && err != pgx.ErrNoRows {
+		return nil, http.StatusInternalServerError, fmt.Errorf("unable to check for url in storage: %s", err)
+	}
+	if len(UrlFromReq.UrlShort) != 0 {
+		return UrlFromReq.UrlShort, http.StatusAccepted, nil
+	}
 	UrlFromReq.Encode()
-	ret, err := h.storage.Save(UrlFromReq.UrlShort, UrlFromReq.UrlLong)
+	_, err = h.storage.Save(UrlFromReq.UrlShort, UrlFromReq.UrlLong)
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to save url in storage: %s", err)
 	}
-	return ret, http.StatusCreated, nil
+	return UrlFromReq.UrlShort, http.StatusCreated, nil
 }
