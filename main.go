@@ -22,6 +22,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error connecting database: %v\n", err)
 		os.Exit(1)
 	}
+
 	defer conn.Close()
 
 	router := handlers.NewRouter("/", conn)
