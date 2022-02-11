@@ -35,9 +35,6 @@ func (p *postgres) Retrieve(shortUrl string) (string, error) {
 	var longUrl string
 	err := p.conn.QueryRow(context.Background(), queryStr, shortUrl).Scan(&longUrl)
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return "", fmt.Errorf("no such short url within storage")
-		}
 		return "", err
 	}
 	return longUrl, nil

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v4"
 	"io"
 	"io/ioutil"
 	"log"
@@ -69,6 +70,9 @@ func (h handler) ProcessShort(w io.Writer, r *http.Request) (interface{}, int, e
 	}
 	ret, err := h.storage.Retrieve(UrlFromReq.UrlShort)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, http.StatusBadRequest, fmt.Errorf("no such short url within storage")
+		}
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to retrieve url from storage: %s", err)
 	}
 	return ret, http.StatusCreated, nil
