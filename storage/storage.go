@@ -8,22 +8,17 @@ import (
 )
 
 type Service interface {
-	Save(string) (string, error)
+	Save(string, string) (string, error)
 	Retrieve(string) (string, error)
 	Close() error
 }
 
-type Url struct {
-	LongUrl  string `json:"long_url"`
-	ShortUrl string `json:"short_url"`
-}
-
 type postgres struct{ conn *pgx.Conn }
 
-func (p *postgres) Save(longUrl string) (string, error) {
+func (p *postgres) Save(shortUrl, longUrl string) (string, error) {
 	queryStr := "INSERT INTO urls (short_url, long_url) VALUES ($1, $2);"
 
-	ret, err := p.conn.Exec(context.Background(), queryStr, "dummy", longUrl)
+	ret, err := p.conn.Exec(context.Background(), queryStr, shortUrl, longUrl)
 	if err != nil || ret.RowsAffected() == 0 {
 		return "", err
 	}

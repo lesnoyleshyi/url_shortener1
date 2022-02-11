@@ -9,15 +9,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"url_shortener1/encoder"
 	"url_shortener1/storage"
 )
 
-type ReqController struct{}
-
-type Url struct {
-	UrlShort string `json:"url_short"`
-	UrlLong  string `json:"url_long"`
-}
 type handler struct {
 	endpoint string
 	storage  storage.Service
@@ -55,7 +50,7 @@ func (h handler) ProcessShort(w io.Writer, r *http.Request) (interface{}, int, e
 	if r.Method != http.MethodGet {
 		return nil, http.StatusMethodNotAllowed, fmt.Errorf("method %s isn't allowed", r.Method)
 	}
-	var UrlFromReq Url
+	var UrlFromReq encoder.Url
 
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
@@ -79,12 +74,13 @@ func (h handler) ProcessShort(w io.Writer, r *http.Request) (interface{}, int, e
 }
 
 func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, error) {
+	var UrlFromReq encoder.Url
+
+	defer r.Body.Close()
 	if r.Method != http.MethodPost {
 		return nil, http.StatusMethodNotAllowed, fmt.Errorf("method %s isn't allowed", r.Method)
 	}
-	var UrlFromReq Url
 
-	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to parse url-request: %s", err)
@@ -95,7 +91,9 @@ func (h handler) ProcessLong(w io.Writer, r *http.Request) (interface{}, int, er
 	if err := json.Unmarshal(body, &UrlFromReq); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error unmarshalling recieved url: %s", err)
 	}
-	ret, err := h.storage.Save(UrlFromReq.UrlLong)
+	UrlFromReq.Encode()
+	fmt.Printf("After method: %s\n", UrlFromReq.UrlShort)
+	ret, err := h.storage.Save(UrlFromReq.UrlShort, UrlFromReq.UrlLong)
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("unable to save url in storage: %s", err)
 	}
