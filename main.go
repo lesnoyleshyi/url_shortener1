@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"os"
 	"url_shortener1/handlers"
@@ -25,12 +24,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	//router := handlers.NewRouter("/", conn)
+	router := handlers.NewRouter("/", conn)
 
-	router := mux.NewRouter()
-	req := handlers.ReqController{}
-	router.HandleFunc("/", req.GetLongRetShort).Methods("POST")
-	router.HandleFunc("/", req.GetShortRetLong).Methods("GET")
+	//router := mux.NewRouter()
+	//req := handlers.ReqController{}
+	//router.HandleFunc("/", req.GetLongRetShort).Methods("POST")
+	//router.HandleFunc("/", req.GetShortRetLong).Methods("GET")
 
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting server: %v\n", err)
