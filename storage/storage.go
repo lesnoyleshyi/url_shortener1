@@ -55,9 +55,22 @@ type DBconfig struct {
 	DbName string
 }
 
-//func (conf *DBconfig) ParseFromEnv() error {
-//
-//}
+func (conf *DBconfig) ParseFromEnv() *DBconfig {
+	conf.User = GetEnvOrDef("POSTGRES_USER", "go_user")
+	conf.Passwd = GetEnvOrDef("POSTGRES_PASSWORD", "8246go")
+	conf.Host = GetEnvOrDef("POSTGRES_HOST", "localhost")
+	conf.Port = GetEnvOrDef("POSTGRES_PORT", "5432")
+	conf.DbName = GetEnvOrDef("POSTGRES_DB", "url_storage")
+	return conf
+}
+
+func GetEnvOrDef(env, defaultVal string) string {
+	val, persist := os.LookupEnv(env)
+	if !persist {
+		return defaultVal
+	}
+	return val
+}
 
 func NewConnection(dbconfig DBconfig) (Service, error) {
 	connstr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
