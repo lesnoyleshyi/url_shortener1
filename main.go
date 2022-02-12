@@ -12,7 +12,7 @@ func main() {
 	conf := storage.DBconfig{
 		User:   "go_user",
 		Passwd: "8246go",
-		Host:   "localhost",
+		Host:   "postgres",
 		Port:   "5432",
 		DbName: "url_storage",
 	}
@@ -26,11 +26,6 @@ func main() {
 	defer conn.Close()
 
 	router := handlers.NewRouter("/", conn)
-
-	//router := mux.NewRouter()
-	//req := handlers.ReqController{}
-	//router.HandleFunc("/", req.GetLongRetShort).Methods("POST")
-	//router.HandleFunc("/", req.GetShortRetLong).Methods("GET")
 
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting server: %v\n", err)

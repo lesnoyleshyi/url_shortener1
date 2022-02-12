@@ -55,6 +55,10 @@ type DBconfig struct {
 	DbName string
 }
 
+//func (conf *DBconfig) ParseFromEnv() error {
+//
+//}
+
 func NewConnection(dbconfig DBconfig) (Service, error) {
 	connstr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbconfig.User, dbconfig.Passwd,
