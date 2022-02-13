@@ -4,6 +4,8 @@ To test its functionality do the following:
   - Run `go run main.go` in project directory to test with your local postgres database,
   OR
   - Run `docker compose up --build` in project directory to test within docker containers.
+  OR
+  - simply send http-requests to my virtual maschine in oracle cloud available at http://132.226.200.167:8080/
 
 Note that first way require postgresql installed on your machine.
 
