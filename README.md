@@ -16,7 +16,7 @@ To get this via psql CLI type the following (without postgres=#):
 
   It assumed postgresql is listening on 5432 port.
   
-  The second way requires docker installed on your machine (note that I use `docker compose` not `docker-compose`).
+  The second way requires docker installed on your machine (note that I use `docker compose` not `docker-compose`. If you get stuck here, try `docker-compose` instead and perhaps change first line in *docker-compose.yml* from *"version: "3.9""* to *"version: "3.3""* or another).
   
 After service run successfully you can send GET and POST requests (using `curl`, for example) with urls in their body:
 
