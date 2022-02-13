@@ -31,3 +31,6 @@ After service run successfully you can send GET and POST requests (using `curl`,
 
 It'll be more handy to use `make` utility by editing *Makefile* and running `make get` or `make post`.
   
+Dockerhub repo:
+
+https://hub.docker.com/repository/docker/lesnoyleshyi/url_shortener
