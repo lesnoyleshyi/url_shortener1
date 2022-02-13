@@ -4,6 +4,8 @@ To test its functionality do the following:
   - Run `go run main.go` in project directory to test with your local postgres database,
   OR
   - Run `docker compose up --build` in project directory to test within docker containers.
+  OR
+  - simply send http-requests to my virtual maschine in oracle cloud available at http://132.226.200.167:8080/
 
 Note that first way require postgresql installed on your machine.
 
@@ -29,3 +31,6 @@ After service run successfully you can send GET and POST requests (using `curl`,
 
 It'll be more handy to use `make` utility by editing *Makefile* and running `make get` or `make post`.
   
+Dockerhub repo:
+
+https://hub.docker.com/repository/docker/lesnoyleshyi/url_shortener
